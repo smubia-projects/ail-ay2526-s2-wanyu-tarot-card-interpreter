@@ -2,8 +2,8 @@ require("dotenv").config();
 const OpenAI = require("openai");
 
 const client = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.API_KEY,
+  baseURL: process.env.API_BASE_URL || "https://openrouter.ai/api/v1",
 });
 
 async function rewriteWithAI(question, interpretations, verdict, categories) {
@@ -65,11 +65,11 @@ Advice: ${interpretations[2].advice}
 `;
 
   try {
-    console.log("[rewriteWithAI] Preparing OpenRouter request...");
+    console.log("[rewriteWithAI] Preparing AI request...");
 
     const response = await Promise.race([
       client.chat.completions.create({
-        model: process.env.OPENROUTER_MODEL || "openai/gpt-4.1-mini",
+        model: process.env.MODEL_NAME || "openai/gpt-4.1-mini",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -81,16 +81,16 @@ Advice: ${interpretations[2].advice}
       ),
     ]);
 
-    console.log("[rewriteWithAI] Response received from OpenRouter");
+    console.log("[rewriteWithAI] AI response received");
 
     if (response && response.choices && response.choices[0]) {
       return response.choices[0].message.content;
     }
 
-    console.error("[rewriteWithAI] OpenRouter returned no content");
+    console.error("[rewriteWithAI] AI provider returned no content");
     console.error(response);
   } catch (error) {
-    console.error("[rewriteWithAI] Error during OpenRouter call:");
+    console.error("[rewriteWithAI] Error during AI request:");
     console.error(error);
   }
 
