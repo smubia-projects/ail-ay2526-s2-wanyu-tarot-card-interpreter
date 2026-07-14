@@ -24,8 +24,8 @@ app.use(
 );
 
 const client = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.API_KEY,
+  baseURL: process.env.API_BASE_URL || "https://openrouter.ai/api/v1",
 });
 
 app.use(express.json());
@@ -126,7 +126,7 @@ Role: ${chosenCards[2].role}
 `;
 
     const response = await client.chat.completions.create({
-      model: process.env.OPENROUTER_MODEL || "openai/gpt-4.1-mini",
+      model: process.env.MODEL_NAME || "openai/gpt-4.1-mini",
       messages: [{ role: "user", content: prompt }],
     });
 
